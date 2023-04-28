@@ -388,13 +388,17 @@ void *handleBuffer(void *arg)
 {
   int client_sock = *(int *)arg;
   char buffer[1024], res[1024];
-  while (1)
+  int conected = 1;
+  while (conected)
   {
     memset(buffer, '\0', 1024);
     memset(res, '\0', 1024);
     int req = recv(client_sock, buffer, sizeof(buffer), 0);
-    if (req == 0)
+    if (req == -1)
+    {
+      printf("Conexao com %d encerrada\n", client_sock);
       break;
+    }
     printf("\nMensagem recebida do cliente %d: %s\n", client_sock, buffer);
     if (strlen(buffer) != 0)
     {
@@ -446,6 +450,7 @@ void *infinityLoop(void *arg)
     }
     else
     {
+      printf("Conexao criada com %d\n", client_sock);
       pthread_create(&tid[num_clients], NULL, handleBuffer, &client_sock);
       clients[num_clients] = client_sock;
       num_clients++;
