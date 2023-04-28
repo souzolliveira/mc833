@@ -481,7 +481,7 @@ int main()
     perror("ERRO AO FAZER BIND DE SOCKET ID A ESTRUTURA DE SOCKET");
     exit(1);
   }
-  listen(server_sock, 5);
+  listen(server_sock, MAX_CLIENTS);
   pthread_t thread_main;
   pthread_create(&thread_main, NULL, infinityLoop, (void *)&server_sock);
 
