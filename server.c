@@ -4,9 +4,11 @@
 #include <unistd.h>
 #include <winsock2.h>
 #include <WS2tcpip.h>
+#include <pthread.h>
 #include <sys/types.h>
 #include <dirent.h>
 
+#define MAX_CLIENTS 5
 #define EMAIL 0
 #define NAME 1
 #define LASTNAME 2
@@ -381,13 +383,82 @@ int removeProfile(char data[], char res[])
   return 0;
 }
 
+// Handling with the buffer
+void *handleBuffer(void *arg)
+{
+  int client_sock = *(int *)arg;
+  char buffer[1024], res[1024];
+  while (1)
+  {
+    memset(buffer, '\0', 1024);
+    memset(res, '\0', 1024);
+    int req = recv(client_sock, buffer, sizeof(buffer), 0);
+    if (req == 0)
+      break;
+    printf("\nMensagem recebida do cliente %d: %s\n", client_sock, buffer);
+    if (strlen(buffer) != 0)
+    {
+      if (buffer[0] == '1')
+        newProfile(client_sock, buffer, res);
+      else if (buffer[0] == '2')
+        listByCourse(buffer, res);
+      else if (buffer[0] == '3')
+        listBySkill(buffer, res);
+      else if (buffer[0] == '4')
+        listByConclusionYear(buffer, res);
+      else if (buffer[0] == '5')
+        listAll(res);
+      else if (buffer[0] == '6')
+        getProfile(buffer, res);
+      else if (buffer[0] == '7')
+        removeProfile(buffer, res);
+      else if (buffer[0] == '8')
+      {
+        close(client_sock);
+        break;
+      }
+      send(client_sock, res, strlen(res), 0);
+      printf("\nMensagem enviada ao cliente %d: %s\n", client_sock, res);
+      memset(buffer, '\0', 1024);
+      memset(res, '\0', 1024);
+    }
+  }
+  close(client_sock);
+  return NULL;
+}
+
+void *infinityLoop(void *arg)
+{
+  int num_clients = 0, clients[MAX_CLIENTS];
+  pthread_t tid[MAX_CLIENTS];
+  while (1)
+  {
+    int client_sock;
+    int server_sock = *(int *)arg;
+    struct sockaddr_in client_addr;
+    socklen_t addr_size = sizeof(client_addr);
+    client_sock = accept(server_sock, (struct sockaddr *)&client_addr, &addr_size);
+
+    if (num_clients >= MAX_CLIENTS)
+    {
+      printf("Numero maximo de conexoes atingindo...\n");
+      close(client_sock);
+    }
+    else
+    {
+      pthread_create(&tid[num_clients], NULL, handleBuffer, &client_sock);
+      clients[num_clients] = client_sock;
+      num_clients++;
+    }
+  }
+  return NULL;
+}
+
 int main()
 {
-  char *ip = "127.0.0.1", buffer[1024], res[1024];
-  int port = 8080, server_sock, client_sock, n;
-  struct sockaddr_in server_addr, client_addr;
-  socklen_t addr_size;
-  pid_t pid;
+  char *ip = "127.0.0.1";
+  int port = 8080, server_sock, n;
+  struct sockaddr_in server_addr;
 
   WSADATA Data;
   WSAStartup(MAKEWORD(2, 2), &Data);
@@ -411,50 +482,12 @@ int main()
     exit(1);
   }
   listen(server_sock, 5);
+  pthread_t thread_main;
+  pthread_create(&thread_main, NULL, infinityLoop, (void *)&server_sock);
 
-  addr_size = sizeof(client_addr);
-  client_sock = accept(server_sock, (struct sockaddr *)&client_addr, &addr_size);
   while (1)
-  {
-    recv(client_sock, buffer, sizeof(buffer), 0);
-    printf("\nMensagem recebida do cliente %d: %s\n", client_sock, buffer);
-    if (strlen(buffer) != 0)
-    {
-      switch (buffer[0])
-      {
-      case '1':
-        newProfile(client_sock, buffer, res);
-        break;
-      case '2':
-        listByCourse(buffer, res);
-        break;
-      case '3':
-        listBySkill(buffer, res);
-        break;
-      case '4':
-        listByConclusionYear(buffer, res);
-        break;
-      case '5':
-        listAll(res);
-        break;
-      case '6':
-        getProfile(buffer, res);
-        break;
-      case '7':
-        removeProfile(buffer, res);
-        break;
-      case '8':
-        close(client_sock);
-        exit(0);
-      default:
-        break;
-      }
-      send(client_sock, res, strlen(res), 0);
-      printf("\nMensagem enviada ao cliente %d: %s\n", client_sock, res);
-      memset(buffer, 0, 1024);
-      memset(res, 0, 1024);
-    }
-  }
+    sleep(1);
+
   close(server_sock);
 
   printf("\n##### SESSAO ENCERRADA #####\n");
