@@ -122,7 +122,7 @@ int listByCourse(char data[], char res[])
             }
           }
         }
-        if (!strcmp(content, array[1]))
+        if (strcmp(content, array[1]) == 0)
         {
           strcat(profile, "\n");
           strcat(res, profile);
@@ -260,7 +260,7 @@ int listByConclusionYear(char data[], char res[])
             }
           }
         }
-        if (!strcmp(content, array[1]))
+        if (strcmp(content, array[1]) == 0)
         {
           strcat(profile, "\n");
           strcat(res, profile);
@@ -416,18 +416,13 @@ void *handleBuffer(void *arg)
         getProfile(buffer, res);
       else if (buffer[0] == '7')
         removeProfile(buffer, res);
-      // else if (buffer[0] == '8')
-      // {
-      //   close(client_sock);
-      //   break;
-      // }
       send(client_sock, res, strlen(res), 0);
       printf("\nMensagem enviada ao cliente %d: %s\n", client_sock, res);
       memset(buffer, '\0', 1024);
       memset(res, '\0', 1024);
     }
   }
-  close(client_sock);
+  closesocket(client_sock);
   return NULL;
 }
 
@@ -446,7 +441,7 @@ void *infinityLoop(void *arg)
     if (num_clients >= MAX_CLIENTS)
     {
       printf("Numero maximo de conexoes atingindo...\n");
-      close(client_sock);
+      closesocket(client_sock);
     }
     else
     {
@@ -493,7 +488,8 @@ int main()
   while (1)
     sleep(1);
 
-  close(server_sock);
+  closesocket(server_sock);
+  WSACleanup();
 
   printf("\n##### SESSAO ENCERRADA #####\n");
 

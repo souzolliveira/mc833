@@ -128,7 +128,9 @@ int main()
     options(sock, option);
   }
 
-  close(sock);
+  closesocket(sock);
+  WSACleanup();
+
   printf("\n##### SESSAO ENCERRADA #####\n");
 
   return 0;
