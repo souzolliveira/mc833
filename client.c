@@ -74,7 +74,7 @@ int options(int sock, int op)
   }
   else if (op == 8)
   {
-    send(sock, "8", 1, 0);
+    // send(sock, "8", 1, 0);
     printf("\nEncerrando...\n");
     return 0;
   }

@@ -394,7 +394,7 @@ void *handleBuffer(void *arg)
     memset(buffer, '\0', 1024);
     memset(res, '\0', 1024);
     int req = recv(client_sock, buffer, sizeof(buffer), 0);
-    if (req == -1)
+    if (req == -1 || req == 0)
     {
       printf("Conexao com %d encerrada\n", client_sock);
       break;
@@ -416,11 +416,11 @@ void *handleBuffer(void *arg)
         getProfile(buffer, res);
       else if (buffer[0] == '7')
         removeProfile(buffer, res);
-      else if (buffer[0] == '8')
-      {
-        close(client_sock);
-        break;
-      }
+      // else if (buffer[0] == '8')
+      // {
+      //   close(client_sock);
+      //   break;
+      // }
       send(client_sock, res, strlen(res), 0);
       printf("\nMensagem enviada ao cliente %d: %s\n", client_sock, res);
       memset(buffer, '\0', 1024);
