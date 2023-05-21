@@ -1,3 +1,9 @@
+/**
+ * MC833
+ * ALUNO: EMANUEL DE SOUZA OLIVEIRA
+ * RA: 170442
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -8,27 +14,34 @@
 // to compile: gcc client.c -o client -lws2_32
 // to execute: ./client.exe
 
-int sendToServer(int sock, int op, char *data)
+int receiveFromServer(int client_sock, char buffer[1024], int op, struct sockaddr_in server_addr)
+{
+  int server_addr_sizeof = sizeof(server_addr);
+  char res[1024];
+  recvfrom(client_sock, res, sizeof(res), 0, (struct sockaddr *)&server_addr, &server_addr_sizeof);
+  printf("\nMensagem recebida do servidor: %s\n", res);
+  return 0;
+}
+
+int sendToServer(int client_sock, int op, char *data, struct sockaddr_in server_addr)
 {
   if (data[strlen(data) - 1] == '\n')
   {
     data[strlen(data) - 1] = '\0';
   }
-  char buffer[1024], res[1024];
+  char buffer[1024];
 
   itoa(op, buffer, 10);
   strcat(buffer, ";");
   strcat(buffer, data);
   printf("\nMensagem enviada ao servidor: %s\n", buffer);
-  send(sock, buffer, strlen(buffer), 0);
-
-  recv(sock, res, sizeof(res), 0);
-  printf("\nMensagem recebida do servidor: %s\n", res);
+  int a = sendto(client_sock, buffer, strlen(buffer), 0, (struct sockaddr *)&server_addr, sizeof(server_addr));
+  receiveFromServer(client_sock, buffer, op, server_addr);
 
   return 0;
 }
 
-int options(int sock, int op)
+int options(int client_sock, int op, struct sockaddr_in server_addr)
 {
   char data[1024];
   if (op == 1)
@@ -74,7 +87,6 @@ int options(int sock, int op)
   }
   else if (op == 8)
   {
-    // send(sock, "8", 1, 0);
     printf("\nEncerrando...\n");
     return 0;
   }
@@ -83,33 +95,30 @@ int options(int sock, int op)
     printf("\nOpcao invalida\n");
     return 0;
   }
-  sendToServer(sock, op, data);
+  sendToServer(client_sock, op, data, server_addr);
   return 0;
 }
 
 int main()
 {
   char *ip = "127.0.0.1";
-  int port = 8080, sock, option = 0;
-  struct sockaddr_in addr;
+  int port = 8080, client_sock, option = 0;
+  struct sockaddr_in server_addr;
   socklen_t addr_size;
 
-  memset(&addr, '\0', sizeof(addr));
-  addr.sin_family = AF_INET;
-  addr.sin_port = port;
-  addr.sin_addr.s_addr = inet_addr(ip);
+  memset(&server_addr, '\0', sizeof(server_addr));
+  server_addr.sin_family = AF_INET;
+  server_addr.sin_port = htons(port);
+  server_addr.sin_addr.s_addr = inet_addr(ip);
 
   WSADATA Data;
   WSAStartup(MAKEWORD(2, 2), &Data);
-  sock = socket(AF_INET, SOCK_STREAM, 0);
-  if (sock < 0)
+  client_sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+  if (client_sock < 0)
   {
     perror("ERRO AO CONECTAR NO SOCKET");
     exit(1);
   }
-
-  connect(sock, (struct sockaddr *)&addr, sizeof(addr));
-  printf("##### SESSAO INICIADA #####\n");
 
   while (option != 8)
   {
@@ -125,10 +134,10 @@ int main()
     printf("Opcao: ");
     scanf("%d", &option);
     fflush(stdin);
-    options(sock, option);
+    options(client_sock, option, server_addr);
   }
 
-  closesocket(sock);
+  closesocket(client_sock);
   WSACleanup();
 
   printf("\n##### SESSAO ENCERRADA #####\n");

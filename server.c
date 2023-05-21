@@ -1,10 +1,15 @@
+/**
+ * MC833
+ * ALUNO: EMANUEL DE SOUZA OLIVEIRA
+ * RA: 170442
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 #include <winsock2.h>
 #include <WS2tcpip.h>
-#include <pthread.h>
 #include <sys/types.h>
 #include <dirent.h>
 
@@ -30,7 +35,7 @@
 // Skills: Ciência dos Dados, Internet das Coisas, Computação em Nuvem
 
 // Register a new profile using email as identifier
-int newProfile(int client_sock, char data[], char res[])
+int newProfile(struct sockaddr_in client_sock, char data[], char res[])
 {
   memset(res, '\0', 1024);
   int i = 0;
@@ -383,97 +388,24 @@ int removeProfile(char data[], char res[])
   return 0;
 }
 
-// Handling with the buffer
-void *handleBuffer(void *arg)
-{
-  int client_sock = *(int *)arg;
-  char buffer[1024], res[1024];
-  int conected = 1;
-  while (conected)
-  {
-    memset(buffer, '\0', 1024);
-    memset(res, '\0', 1024);
-    int req = recv(client_sock, buffer, sizeof(buffer), 0);
-    if (req == -1 || req == 0)
-    {
-      printf("Conexao com %d encerrada\n", client_sock);
-      break;
-    }
-    printf("\nMensagem recebida do cliente %d: %s\n", client_sock, buffer);
-    if (strlen(buffer) != 0)
-    {
-      if (buffer[0] == '1')
-        newProfile(client_sock, buffer, res);
-      else if (buffer[0] == '2')
-        listByCourse(buffer, res);
-      else if (buffer[0] == '3')
-        listBySkill(buffer, res);
-      else if (buffer[0] == '4')
-        listByConclusionYear(buffer, res);
-      else if (buffer[0] == '5')
-        listAll(res);
-      else if (buffer[0] == '6')
-        getProfile(buffer, res);
-      else if (buffer[0] == '7')
-        removeProfile(buffer, res);
-      send(client_sock, res, strlen(res), 0);
-      printf("\nMensagem enviada ao cliente %d: %s\n", client_sock, res);
-      memset(buffer, '\0', 1024);
-      memset(res, '\0', 1024);
-    }
-  }
-  closesocket(client_sock);
-  return NULL;
-}
-
-void *infinityLoop(void *arg)
-{
-  int num_clients = 0, clients[MAX_CLIENTS];
-  pthread_t tid[MAX_CLIENTS];
-  while (1)
-  {
-    int client_sock;
-    int server_sock = *(int *)arg;
-    struct sockaddr_in client_addr;
-    socklen_t addr_size = sizeof(client_addr);
-    client_sock = accept(server_sock, (struct sockaddr *)&client_addr, &addr_size);
-
-    if (num_clients >= MAX_CLIENTS)
-    {
-      printf("Numero maximo de conexoes atingindo...\n");
-      closesocket(client_sock);
-    }
-    else
-    {
-      printf("Conexao criada com %d\n", client_sock);
-      pthread_create(&tid[num_clients], NULL, handleBuffer, &client_sock);
-      clients[num_clients] = client_sock;
-      num_clients++;
-    }
-  }
-  return NULL;
-}
-
 int main()
 {
-  char *ip = "127.0.0.1";
   int port = 8080, server_sock, n;
   struct sockaddr_in server_addr;
 
   WSADATA Data;
   WSAStartup(MAKEWORD(2, 2), &Data);
-  server_sock = socket(AF_INET, SOCK_STREAM, 0);
+  server_sock = socket(AF_INET, SOCK_DGRAM, 0);
   if (server_sock < 0)
   {
     perror("ERRO AO CRIAR SERVER SOCKET");
     exit(1);
   }
-  printf("##### SESSAO INICIADA #####\n");
 
   memset(&server_addr, '\0', sizeof(server_addr));
   server_addr.sin_family = AF_INET;
-  server_addr.sin_port = port;
-  server_addr.sin_addr.s_addr = inet_addr(ip);
+  server_addr.sin_port = htons(port);
+  server_addr.sin_addr.s_addr = INADDR_ANY;
 
   n = bind(server_sock, (struct sockaddr *)&server_addr, sizeof(server_addr));
   if (n < 0)
@@ -481,12 +413,45 @@ int main()
     perror("ERRO AO FAZER BIND DE SOCKET ID A ESTRUTURA DE SOCKET");
     exit(1);
   }
-  listen(server_sock, MAX_CLIENTS);
-  pthread_t thread_main;
-  pthread_create(&thread_main, NULL, infinityLoop, (void *)&server_sock);
 
+  struct sockaddr_in client_addr;
+  socklen_t addr_size = sizeof(client_addr);
+  char buffer[1024], res[1024];
+  int client_sizeof = sizeof(client_addr);
   while (1)
-    sleep(1);
+  {
+    memset(buffer, '\0', 1024);
+    memset(res, '\0', 1024);
+    int req = recvfrom(server_sock, buffer, sizeof(buffer), 0, (struct sockaddr *)&client_addr, &client_sizeof);
+    if (req > 0)
+    {
+      printf("\nMensagem recebida do cliente: %s\n", buffer);
+      if (strlen(buffer) != 0)
+      {
+        if (buffer[0] == '1')
+          newProfile(client_addr, buffer, res);
+        else if (buffer[0] == '2')
+          listByCourse(buffer, res);
+        else if (buffer[0] == '3')
+          listBySkill(buffer, res);
+        else if (buffer[0] == '4')
+          listByConclusionYear(buffer, res);
+        else if (buffer[0] == '5')
+          listAll(res);
+        else if (buffer[0] == '6')
+          getProfile(buffer, res);
+        else if (buffer[0] == '7')
+          removeProfile(buffer, res);
+      }
+    }
+    int resp = sendto(server_sock, res, strlen(res), 0, (struct sockaddr *)&client_addr, sizeof(client_addr));
+    if (resp > 0)
+    {
+      printf("\nMensagem enviada ao cliente: %s\n", res);
+      memset(buffer, '\0', 1024);
+      memset(res, '\0', 1024);
+    }
+  }
 
   closesocket(server_sock);
   WSACleanup();
