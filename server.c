@@ -49,18 +49,18 @@ int newProfile(struct sockaddr_in client_sock, char data[], char res[])
   }
 
   printf(" AQUI 1");
-  // char filename[104];
-  // strcpy(filename, array[1]);
-  // strcat(filename, ".txt");
-  // FILE *file;
-  // file = fopen(filename, "w");
-  // printf(" AQUI 2");
-  // if (file == NULL)
-  // {
-  //   strcpy(res, "Não foi possível cadastrar o aluno!");
-  //   printf(" AQUI 3");
-  //   return 0;
-  // }
+  char filename[104];
+  strcpy(filename, array[1]);
+  strcat(filename, ".txt");
+  FILE *file;
+  file = fopen(filename, "w");
+  printf(" AQUI 2");
+  if (file == NULL)
+  {
+    strcpy(res, "Não foi possível cadastrar o aluno!");
+    printf(" AQUI 3");
+    return 0;
+  }
 
   // printf(" AQUI 4");
   // for (int len = 1; len < sizeof(array); len++)
