@@ -36,7 +36,6 @@
 // Register a new profile using email as identifier
 int newProfile(struct sockaddr_in client_sock, char data[], char res[])
 {
-  printf("\n ENTROU 1 \n");
   memset(res, '\0', 1024);
   int i = 0;
   char *p = strtok(data, ";"), *array[8];
@@ -78,7 +77,6 @@ int newProfile(struct sockaddr_in client_sock, char data[], char res[])
 // List all profiles (email and name) graduated in a given course
 int listByCourse(char data[], char res[])
 {
-  printf("\n ENTROU 2 \n");
   memset(res, '\0', 1024);
   int i = 0;
   char *p = strtok(data, ";"), *array[2];
@@ -136,6 +134,10 @@ int listByCourse(char data[], char res[])
         }
         fclose(file);
       }
+      else
+      {
+        strcat(res, "Nenhum aluno encontrado");
+      }
     }
     closedir(directory);
   }
@@ -145,7 +147,6 @@ int listByCourse(char data[], char res[])
 // List all profiles (email and name) who have a certain skill
 int listBySkill(char data[], char res[])
 {
-  printf("\n ENTROU 3 \n");
   memset(res, '\0', 1024);
   int i = 0;
   char *p = strtok(data, ";"), *array[2];
@@ -200,6 +201,10 @@ int listBySkill(char data[], char res[])
         }
         fclose(file);
       }
+      else
+      {
+        strcat(res, "Nenhum aluno encontrado");
+      }
     }
     closedir(directory);
   }
@@ -209,7 +214,6 @@ int listBySkill(char data[], char res[])
 // List all profiles (email, name and course) graduated in a given year
 int listByConclusionYear(char data[], char res[])
 {
-  printf("\n ENTROU 4 \n");
   memset(res, '\0', 1024);
   int i = 0;
   char *p = strtok(data, ";"), *array[2];
@@ -276,6 +280,10 @@ int listByConclusionYear(char data[], char res[])
         }
         fclose(file);
       }
+      else
+      {
+        strcat(res, "Nenhum aluno encontrado");
+      }
     }
     closedir(directory);
   }
@@ -285,7 +293,6 @@ int listByConclusionYear(char data[], char res[])
 // List all information from all profiles
 int listAll(char res[])
 {
-  printf("\n ENTROU 5 \n");
   memset(res, '\0', 1024);
   int i = 0;
   DIR *directory;
@@ -319,6 +326,10 @@ int listAll(char res[])
         memset(profile, '\0', 1024);
         fclose(file);
       }
+      else
+      {
+        strcat(res, "Nenhum aluno encontrado");
+      }
     }
     closedir(directory);
   }
@@ -328,7 +339,6 @@ int listAll(char res[])
 // Given a profile's email, return their information
 int getProfile(char data[], char res[])
 {
-  printf("\n ENTROU 6 \n");
   memset(res, '\0', 1024);
   int i = 0;
   char *p = strtok(data, ";"), *array[2];
@@ -371,7 +381,6 @@ int getProfile(char data[], char res[])
 // Removing a profile from its identifier (email)
 int removeProfile(char data[], char res[])
 {
-  printf("\n ENTROU 7 \n");
   memset(res, '\0', 1024);
   int i = 0;
   char *p = strtok(data, ";"), *array[2];
@@ -448,8 +457,6 @@ int main()
           removeProfile(buffer, res);
       }
     }
-
-    printf("\n RESPOSTA %s\n", res);
     int resp = sendto(server_sock, res, strlen(res), 0, (struct sockaddr *)&client_addr, sizeof(client_addr));
     if (resp > 0)
     {
