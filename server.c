@@ -8,9 +8,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <winsock2.h>
-#include <WS2tcpip.h>
-#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
 #include <dirent.h>
 
 #define MAX_CLIENTS 5
@@ -393,8 +392,6 @@ int main()
   int port = 8080, server_sock, n;
   struct sockaddr_in server_addr;
 
-  WSADATA Data;
-  WSAStartup(MAKEWORD(2, 2), &Data);
   server_sock = socket(AF_INET, SOCK_DGRAM, 0);
   if (server_sock < 0)
   {
@@ -453,8 +450,7 @@ int main()
     }
   }
 
-  closesocket(server_sock);
-  WSACleanup();
+  close(server_sock);
 
   printf("\n##### SESSAO ENCERRADA #####\n");
 

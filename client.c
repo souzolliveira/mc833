@@ -8,8 +8,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <winsock2.h>
-#include <WS2tcpip.h>
+#include <sys/socket.h>
+#include <arpa/inet.h>
 
 // to compile: gcc client.c -o client -lws2_32
 // to execute: ./client.exe
@@ -31,7 +31,7 @@ int sendToServer(int client_sock, int op, char *data, struct sockaddr_in server_
   }
   char buffer[1024];
 
-  itoa(op, buffer, 10);
+  snprintf(buffer, sizeof(buffer), "%d", op);
   strcat(buffer, ";");
   strcat(buffer, data);
   printf("\nMensagem enviada ao servidor: %s\n", buffer);
@@ -111,8 +111,6 @@ int main()
   server_addr.sin_port = htons(port);
   server_addr.sin_addr.s_addr = inet_addr(ip);
 
-  WSADATA Data;
-  WSAStartup(MAKEWORD(2, 2), &Data);
   client_sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
   if (client_sock < 0)
   {
@@ -137,8 +135,7 @@ int main()
     options(client_sock, option, server_addr);
   }
 
-  closesocket(client_sock);
-  WSACleanup();
+  close(client_sock);
 
   printf("\n##### SESSAO ENCERRADA #####\n");
 
