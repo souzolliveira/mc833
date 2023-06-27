@@ -40,10 +40,10 @@ int sendToServer(int client_sock, int op, char *data, struct sockaddr_in server_
   return 0;
 }
 
-int options(int client_sock, int op, struct sockaddr_in server_addr)
+int options(int client_sock, char *op, struct sockaddr_in server_addr)
 {
   char data[1024];
-  if (op == 1)
+  if (strcmp(op, "1") == 0)
   {
     printf("\nDigite os dados seguindo o modelo:\n");
     printf("email;nome;sobrenome;cidade;curso-de-graduacao;ano-de-formacao;habilidade1,habilidade2,habilidade3\n");
@@ -52,7 +52,7 @@ int options(int client_sock, int op, struct sockaddr_in server_addr)
     fgets(data, 1020, stdin);
     data[strcspn(data, "\n")] = 0;
   }
-  else if (op == 2)
+  else if (strcmp(op, "2") == 0)
   {
     printf("\nDigite o curso:\n");
     printf("\nCurso: ");
@@ -60,7 +60,7 @@ int options(int client_sock, int op, struct sockaddr_in server_addr)
     fgets(data, 1020, stdin);
     data[strcspn(data, "\n")] = 0;
   }
-  else if (op == 3)
+  else if (strcmp(op, "3") == 0)
   {
     printf("\nDigite a habilidade:\n");
     printf("\nHabilidade: ");
@@ -68,7 +68,7 @@ int options(int client_sock, int op, struct sockaddr_in server_addr)
     fgets(data, 1020, stdin);
     data[strcspn(data, "\n")] = 0;
   }
-  else if (op == 4)
+  else if (strcmp(op, "4") == 0)
   {
     printf("\nDigite o ano de conslusao:\n");
     printf("\nAno: ");
@@ -76,11 +76,11 @@ int options(int client_sock, int op, struct sockaddr_in server_addr)
     fgets(data, 1020, stdin);
     data[strcspn(data, "\n")] = 0;
   }
-  else if (op == 5)
+  else if (strcmp(op, "5") == 0)
   {
     printf("\n");
   }
-  else if (op == 6)
+  else if (strcmp(op, "6") == 0)
   {
     printf("\nDigite o email do perfil que deseja ver:\n");
     printf("\nEmail: ");
@@ -88,7 +88,7 @@ int options(int client_sock, int op, struct sockaddr_in server_addr)
     fgets(data, 1020, stdin);
     data[strcspn(data, "\n")] = 0;
   }
-  else if (op == 7)
+  else if (strcmp(op, "7") == 0)
   {
     printf("\nDigite o email do pefil que deseja excluir:\n");
     printf("\nEmail: ");
@@ -96,7 +96,7 @@ int options(int client_sock, int op, struct sockaddr_in server_addr)
     fgets(data, 1020, stdin);
     data[strcspn(data, "\n")] = 0;
   }
-  else if (op == 8)
+  else if (strcmp(op, "8") == 0)
   {
     printf("\nEncerrando...\n");
     return 0;
@@ -112,8 +112,8 @@ int options(int client_sock, int op, struct sockaddr_in server_addr)
 
 int main()
 {
-  char *ip = "127.0.0.1";
-  int port = 8080, client_sock, option = 0;
+  char *ip = "127.0.0.1", option[10];
+  int port = 8080, client_sock;
   struct sockaddr_in server_addr;
   socklen_t addr_size;
 
@@ -129,7 +129,6 @@ int main()
     exit(1);
   }
 
-  char input[10];
   while (1)
   {
     printf("\nEscolha uma das opcoes:\n");
@@ -143,9 +142,9 @@ int main()
     printf("8- Encerrar.\n\n");
     printf("Opcao: ");
     fflush(stdin);
-    fgets(input, 10, stdin);
-    input[strcspn(input, "\n")] = 0;
-    if (strcmp(input, "8") == 0)
+    fgets(option, 10, stdin);
+    option[strcspn(option, "\n")] = 0;
+    if (strcmp(option, "8") == 0)
     {
       break;
     }
