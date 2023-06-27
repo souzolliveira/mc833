@@ -29,6 +29,7 @@ int receiveFromServer(int client_sock, struct sockaddr_in server_addr)
 int sendToServer(int client_sock, char *op, char *data, struct sockaddr_in server_addr)
 {
   char buffer[1024];
+  memset(buffer, '\0', 1024);
   strcat(buffer, op);
   strcat(buffer, ";");
   strcat(buffer, data);
