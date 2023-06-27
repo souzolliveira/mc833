@@ -134,10 +134,6 @@ int listByCourse(char data[], char res[])
         }
         fclose(file);
       }
-      else
-      {
-        strcat(res, "Nenhum aluno encontrado");
-      }
     }
     closedir(directory);
   }
@@ -200,10 +196,6 @@ int listBySkill(char data[], char res[])
           memset(profile, '\0', 1024);
         }
         fclose(file);
-      }
-      else
-      {
-        strcat(res, "Nenhum aluno encontrado");
       }
     }
     closedir(directory);
@@ -280,10 +272,6 @@ int listByConclusionYear(char data[], char res[])
         }
         fclose(file);
       }
-      else
-      {
-        strcat(res, "Nenhum aluno encontrado");
-      }
     }
     closedir(directory);
   }
@@ -325,10 +313,6 @@ int listAll(char res[])
         strcat(res, profile);
         memset(profile, '\0', 1024);
         fclose(file);
-      }
-      else
-      {
-        strcat(res, "Nenhum aluno encontrado");
       }
     }
     closedir(directory);
