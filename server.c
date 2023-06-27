@@ -62,17 +62,16 @@ int newProfile(struct sockaddr_in client_sock, char data[], char res[])
     return 0;
   }
 
-  printf(" AQUI 4 %s", array);
-  // for (int len = 1; len < 8; len++)
-  // {
-  //   printf(" AQUI FOR: %d", len);
-  //   if (strcmp(array[len], "") != 0)
-  //   {
-  //     printf(" AQUI FOR IF %s", array[len]);
-  //     fprintf(file, array[len]);
-  //     fprintf(file, "\n");
-  //   }
-  // }
+  for (int len = 1; len < 8; len++)
+  {
+    printf(" AQUI FOR: %d %s", len, array[len]);
+    // if (strcmp(array[len], "") != 0)
+    // {
+    //   printf(" AQUI FOR IF %s", array[len]);
+    //   fprintf(file, array[len]);
+    //   fprintf(file, "\n");
+    // }
+  }
   printf(" AQUI fora");
   fclose(file);
   strcpy(res, "Perfil salvo com sucesso!");
