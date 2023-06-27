@@ -131,8 +131,8 @@ int main()
 
   while (1)
   {
-    memset(option, '\0', sizeof(option))
-        printf("\nEscolha uma das opcoes:\n");
+    memset(option, '\0', sizeof(option));
+    printf("\nEscolha uma das opcoes:\n");
     printf("1- Novo perfil;\n");
     printf("2- Listar alunos por curso;\n");
     printf("3- Listar alunos por habilidade;\n");
