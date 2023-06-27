@@ -37,10 +37,14 @@
 int newProfile(struct sockaddr_in client_sock, char data[], char res[])
 {
   memset(res, '\0', 1024);
-  int i = 0;
+  int i;
   char *p = strtok(data, ";"), *array[8];
-  memset(array, '\0', 8);
+  for (i = 0; i < 8; i++)
+  {
+    array[i] = "\0";
+  }
 
+  i = 0;
   while (p != NULL)
   {
     array[i++] = p;
