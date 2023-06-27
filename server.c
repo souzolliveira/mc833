@@ -36,6 +36,7 @@
 // Register a new profile using email as identifier
 int newProfile(struct sockaddr_in client_sock, char data[], char res[])
 {
+  printf(" AQUI 0");
   memset(res, '\0', 1024);
   int i = 0;
   char *p = strtok(data, ";"), *array[8];
@@ -430,7 +431,10 @@ int main()
       if (strlen(buffer) != 0)
       {
         if (buffer[0] == '1')
+        {
+          printf(" AQUI");
           newProfile(client_addr, buffer, res);
+        }
         else if (buffer[0] == '2')
           listByCourse(buffer, res);
         else if (buffer[0] == '3')
