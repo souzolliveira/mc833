@@ -28,6 +28,7 @@ int receiveFromServer(int client_sock, struct sockaddr_in server_addr)
 
 int sendToServer(int client_sock, char *op, char *data, struct sockaddr_in server_addr)
 {
+  printf("op: %s", op);
   char buffer[1024];
   memset(buffer, '\0', 1024);
   strcat(buffer, op);
@@ -43,6 +44,7 @@ int sendToServer(int client_sock, char *op, char *data, struct sockaddr_in serve
 int options(int client_sock, char *op, struct sockaddr_in server_addr)
 {
   char data[1024];
+  memset(data, '\0', 1024);
   if (strcmp(op, "1") == 0)
   {
     printf("\nDigite os dados seguindo o modelo:\n");
