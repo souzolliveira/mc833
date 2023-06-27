@@ -60,7 +60,7 @@ int newProfile(struct sockaddr_in client_sock, char data[], char res[])
 
   for (int len = 1; len < sizeof(array); len++)
   {
-    if (strcmp(array[len], '') != 0)
+    if (strcmp(array[len], "") != 0)
     {
       fprintf(file, array[len]);
       fprintf(file, "\n");
