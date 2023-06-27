@@ -39,6 +39,7 @@ int newProfile(struct sockaddr_in client_sock, char data[], char res[])
   memset(res, '\0', 1024);
   int i = 0;
   char *p = strtok(data, ";"), *array[8];
+  memset(array, '\0', 8);
 
   while (p != NULL)
   {
@@ -56,10 +57,14 @@ int newProfile(struct sockaddr_in client_sock, char data[], char res[])
     strcpy(res, "Não foi possível cadastrar o aluno!");
     return 0;
   }
+
   for (int len = 1; len < sizeof(array); len++)
   {
-    fprintf(file, array[len]);
-    fprintf(file, "\n");
+    if (strcmp(array[len], '') != 0)
+    {
+      fprintf(file, array[len]);
+      fprintf(file, "\n");
+    }
   }
   fclose(file);
   strcpy(res, "Perfil salvo com sucesso!");
