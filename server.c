@@ -399,7 +399,7 @@ int main()
     exit(1);
   }
 
-  memset(&server_addr, '\0', sizeof(server_addr));
+  bzero((char *)&server_addr, sizeof(server_addr));
   server_addr.sin_family = AF_INET;
   server_addr.sin_port = htons(port);
   server_addr.sin_addr.s_addr = INADDR_ANY;
@@ -419,7 +419,7 @@ int main()
   {
     memset(buffer, '\0', 1024);
     memset(res, '\0', 1024);
-    int req = recvfrom(server_sock, buffer, sizeof(buffer), 0, (struct sockaddr *)&client_addr, &client_sizeof);
+    int req = recvfrom(server_sock, buffer, sizeof(buffer) - 1, 0, (struct sockaddr *)&client_addr, &client_sizeof);
     if (req > 0)
     {
       printf("\nMensagem recebida do cliente: %s\n", buffer);

@@ -143,7 +143,7 @@ int main()
     printf("8- Encerrar.\n\n");
     printf("Opcao: ");
     fflush(stdin);
-    fgets(input, 10000, stdin);
+    fgets(input, 10, stdin);
     input[strcspn(input, "\n")] = 0;
     if (strcmp(input, "8") == 0)
     {
