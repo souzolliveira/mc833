@@ -14,7 +14,7 @@
 // to compile: gcc client.c -o client -lws2_32
 // to execute: ./client.exe
 
-int receiveFromServer(int client_sock, int op, struct sockaddr_in server_addr)
+int receiveFromServer(int client_sock, struct sockaddr_in server_addr)
 {
   int server_addr_sizeof = sizeof(server_addr);
   char res[1024];
@@ -26,16 +26,15 @@ int receiveFromServer(int client_sock, int op, struct sockaddr_in server_addr)
   return 0;
 }
 
-int sendToServer(int client_sock, int op, char *data, struct sockaddr_in server_addr)
+int sendToServer(int client_sock, char *op, char *data, struct sockaddr_in server_addr)
 {
   char buffer[1024];
-
-  snprintf(buffer, sizeof(buffer), "%d", op);
+  strcat(buffer, op);
   strcat(buffer, ";");
   strcat(buffer, data);
   printf("\nMensagem enviada ao servidor: %s\n", buffer);
   int a = sendto(client_sock, buffer, strlen(buffer), 0, (struct sockaddr *)&server_addr, sizeof(server_addr));
-  receiveFromServer(client_sock, op, server_addr);
+  receiveFromServer(client_sock, server_addr);
 
   return 0;
 }
