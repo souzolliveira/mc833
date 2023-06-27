@@ -36,10 +36,9 @@
 // Register a new profile using email as identifier
 int newProfile(struct sockaddr_in client_sock, char data[], char res[])
 {
-  printf(" AQUI 0");
   memset(res, '\0', 1024);
   int i = 0;
-  char *p = strtok(data, ";"), *array[8];
+  char *p = strtok(data, ";"), array[8];
   memset(array, '\0', 8);
 
   while (p != NULL)
@@ -48,31 +47,29 @@ int newProfile(struct sockaddr_in client_sock, char data[], char res[])
     p = strtok(NULL, ";");
   }
 
-  printf(" AQUI 1");
   char filename[104];
   strcpy(filename, array[1]);
   strcat(filename, ".txt");
   FILE *file;
   file = fopen(filename, "w");
-  printf(" AQUI 2");
   if (file == NULL)
   {
     strcpy(res, "Não foi possível cadastrar o aluno!");
-    printf(" AQUI 3");
     return 0;
   }
-
-  for (int len = 1; len < 8; len++)
-  {
-    printf(" AQUI FOR: %d %s", len, array[len]);
-    // if (strcmp(array[len], "") != 0)
-    // {
-    //   printf(" AQUI FOR IF %s", array[len]);
-    //   fprintf(file, array[len]);
-    //   fprintf(file, "\n");
-    // }
-  }
-  printf(" AQUI fora");
+  fprintf(file, array[1]);
+  fprintf(file, "\n");
+  fprintf(file, array[2]);
+  fprintf(file, "\n");
+  fprintf(file, array[3]);
+  fprintf(file, "\n");
+  fprintf(file, array[4]);
+  fprintf(file, "\n");
+  fprintf(file, array[5]);
+  fprintf(file, "\n");
+  fprintf(file, array[6]);
+  fprintf(file, "\n");
+  fprintf(file, array[7]);
   fclose(file);
   strcpy(res, "Perfil salvo com sucesso!");
   return 0;
@@ -430,10 +427,7 @@ int main()
       if (strlen(buffer) != 0)
       {
         if (buffer[0] == '1')
-        {
-          printf(" AQUI");
           newProfile(client_addr, buffer, res);
-        }
         else if (buffer[0] == '2')
           listByCourse(buffer, res);
         else if (buffer[0] == '3')
