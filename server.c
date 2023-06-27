@@ -53,22 +53,14 @@ int newProfile(struct sockaddr_in client_sock, char data[], char res[])
   file = fopen(filename, "w");
   if (file == NULL)
   {
-    strcpy(res, "Perfil salvo com sucesso!");
+    strcpy(res, "Não foi possível cadastrar o aluno!");
     return 0;
   }
-  fprintf(file, array[1]);
-  fprintf(file, "\n");
-  fprintf(file, array[2]);
-  fprintf(file, "\n");
-  fprintf(file, array[3]);
-  fprintf(file, "\n");
-  fprintf(file, array[4]);
-  fprintf(file, "\n");
-  fprintf(file, array[5]);
-  fprintf(file, "\n");
-  fprintf(file, array[6]);
-  fprintf(file, "\n");
-  fprintf(file, array[7]);
+  for (int len = 1; len < sizeof(array); len++)
+  {
+    fprintf(file, array[len]);
+    fprintf(file, "\n");
+  }
   fclose(file);
   strcpy(res, "Perfil salvo com sucesso!");
   return 0;
