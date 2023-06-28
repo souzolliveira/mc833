@@ -11,7 +11,7 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 
-// to compile: gcc client.c -o client -lws2_32
+// to compile: gcc client.c -o client -Wno-format
 // to execute: ./client.exe
 
 int receiveFromServer(int client_sock, struct sockaddr_in server_addr)

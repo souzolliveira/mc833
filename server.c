@@ -21,7 +21,7 @@
 #define YEAR 5
 #define SKILLS 6
 
-// to compile: gcc server.c -o server -lws2_32
+// to compile: gcc server.c -o server -Wno-format
 // to execute: ./server.exe
 
 // Profile's sample:
